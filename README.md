@@ -2,15 +2,9 @@
 
 # ckanext-sentry
 
-**TODO:** Put a description of your extension here:  What does it do? What features does it have? Consider including some screenshots or embedding a video!
-
+This plugin adds sentry as middleware using sentry_sdk to log directly to Sentry.
 
 ## Requirements
-
-**TODO:** For example, you might want to mention here which versions of CKAN this
-extension works with.
-
-If your extension works across different versions you can add the following table:
 
 Compatibility with core CKAN versions:
 
@@ -20,19 +14,8 @@ Compatibility with core CKAN versions:
 | 2.10            | not tested  |
 | 2.11            | yes         |
 
-Suggested values:
-
-* "yes"
-* "not tested" - I can't think of a reason why it wouldn't work
-* "not yet" - there is an intention to get it working
-* "no"
-
 
 ## Installation
-
-**TODO:** Add any additional install steps to the list below.
-   For example installing any non-Python dependencies or adding any required
-   config settings.
 
 To install ckanext-sentry:
 
@@ -58,13 +41,19 @@ To install ckanext-sentry:
 
 ## Config settings
 
-None at present
+Make sure to configure the following configuration-entries to set up logging with sentry.
 
-**TODO:** Document any optional config settings here. For example:
+    # Enable/disable logging to sentry:
+	# (optional, default: False).
+	ckanext.sentry.configure_logging = False
 
-	# The minimum number of hours to wait before re-checking a resource
-	# (optional, default: 24).
-	ckanext.sentry.some_setting = some_default_value
+	# The project-specific DSN-URL-String. See here, how to find it: https://docs.sentry.io/product/sentry-basics/dsn-explainer/#where-to-find-your-dsn
+	# (mandatory, default: "").
+	ckanext.sentry.dsn = https://bdda2dd00b2bb8296f4da0767b8a7adc@o198669.ingest.us.sentry.io/4509909612298240
+
+    # Configure log_level for sentry:
+	# (optional, default: WARNING).
+	ckanext.sentry.log_level = WARNING
 
 
 ## Developer installation
