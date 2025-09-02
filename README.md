@@ -55,6 +55,10 @@ Make sure to configure the following configuration-entries to set up logging wit
 	# (optional, default: WARNING).
 	ckanext.sentry.log_level = WARNING
 
+    # Configure loggers, separated with spaces, for sentry:
+	# (optional, default: ["", "ckan", "ckanext", "sentry.errors"]).
+	ckanext.sentry.loggers = ckan ckanext ckanext.dcat ckanext.scheming.plugin
+
 
 ## Developer installation
 

@@ -41,12 +41,28 @@ class SentryPlugin(plugins.SingletonPlugin):
         """
         Configure the Sentry log handler to the specified level
         """
-        CKAN_SENTRY_LOG_LEVEL = toolkit.config.get("ckanext.sentry.log_level", logging.INFO)
-        loggers = ["", "ckan", "ckanext", "sentry.errors"]
+        CKAN_SENTRY_LOG_LEVEL_NAME = self._parse_log_level_name("ckanext.sentry.log_level")
+        CKAN_SENTRY_LOG_LEVEL_INT = self._parse_log_level_int("ckanext.sentry.log_level")
+        CKAN_SENTRY_LOGGERS = toolkit.config.get("ckanext.sentry.loggers", None)
+        CKAN_SENTRY_PROPAGATE = toolkit.asbool(toolkit.config.get("ckanext.sentry.propagate", False))
+
+        if CKAN_SENTRY_LOGGERS:
+            loggers = CKAN_SENTRY_LOGGERS.split()
+        else:
+            loggers = ["", "ckan", "ckanext", "sentry.errors"]
         for name in loggers:
             logger = logging.getLogger(name)
-            logger.setLevel(CKAN_SENTRY_LOG_LEVEL)
-            logger.addHandler(BreadcrumbHandler(level=CKAN_SENTRY_LOG_LEVEL))
-            logger.addHandler(EventHandler(level=logging.ERROR))
+            logger.propagate = False  # avoid duplicate events from parent loggers
+            logger.setLevel(CKAN_SENTRY_LOG_LEVEL_NAME)
+            logger.addHandler(BreadcrumbHandler(level=CKAN_SENTRY_LOG_LEVEL_INT))
+            logger.addHandler(EventHandler(level=CKAN_SENTRY_LOG_LEVEL_INT))
 
-        log.debug("Setting up Sentry logger with level {0}".format(CKAN_SENTRY_LOG_LEVEL))
+        log.debug("Setting up Sentry logger with level {0}".format(CKAN_SENTRY_LOG_LEVEL_NAME))
+
+    def _parse_log_level_name(self, conf):
+        raw_level = self._parse_log_level_int(conf)
+        name = str(raw_level).strip().upper()
+        return logging.getLevelName(name)
+
+    def _parse_log_level_int(self, conf):
+        return toolkit.config.get(conf, logging.WARNING)
