@@ -47,7 +47,7 @@ The default configuration will send all logs with the level ERROR to Sentry. All
 	# (mandatory, default: "").
 	ckanext.sentry.dsn = https://bdda2dd00b2bb8296f4da0767b8a7adc@o198669.ingest.us.sentry.io/4509909612298240
 
-Make sure to configure the following configuration-entries to set up logging with sentry.
+You can deactivate the creation of the sentry-middleware using this configuration:
 
     # Enable/disable logging to sentry:
 	# (optional, default: True).
