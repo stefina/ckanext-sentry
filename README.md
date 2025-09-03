@@ -55,11 +55,11 @@ Make sure to configure the following configuration-entries to set up logging wit
 	# (optional, default: WARNING).
 	ckanext.sentry.log_level = WARNING
 
-    # Configure loggers, separated with spaces, for sentry:
-	# (optional, default: ["", "ckan", "ckanext", "sentry.errors"]).
+    # Configure loggers, separated with spaces, for sentry. Add `""` to include the root-logger:
+	# (optional, default: "" ckan ckanext sentry.errors).
 	ckanext.sentry.loggers = ckan ckanext ckanext.dcat ckanext.scheming.plugin
 
-    # Enable propagated logging by setting to `True` or avoid duplicate events from parent loggers:
+    # Control whether a logger passes its log records up the hierarchy. Setting it to `False` gives you a fine-grained logging control. Setting this to `True` can create duplicates:
 	# (optional, default: False).
 	ckanext.sentry.propagate = True
 
