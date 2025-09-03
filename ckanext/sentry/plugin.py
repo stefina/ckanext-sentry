@@ -1,6 +1,6 @@
 import logging
 import sentry_sdk
-from sentry_sdk.integrations.logging import EventHandler, BreadcrumbHandler
+from sentry_sdk.integrations.logging import EventHandler, BreadcrumbHandler, LoggingIntegration
 from sentry_sdk.integrations.wsgi import SentryWsgiMiddleware
 
 import ckan.plugins as plugins
@@ -26,9 +26,20 @@ class SentryPlugin(plugins.SingletonPlugin):
 
     def make_error_log_middleware(self, app, config):
         CKAN_SENTRY_DSN = toolkit.config.get("ckanext.sentry.dsn", None)
+        CKAN_SENTRY_GLOBAL_ERROR_LOGGING = toolkit.asbool(toolkit.config.get("ckanext.sentry.global_error_logging", False))
+        CKAN_SENTRY_GLOBAL_ERROR_LOGGING_LOG_LEVEL = self._parse_log_level_int("ckanext.sentry.global_error_logging.log_level")
+        if CKAN_SENTRY_GLOBAL_ERROR_LOGGING:
+            logging_integration = LoggingIntegration(
+                level=CKAN_SENTRY_GLOBAL_ERROR_LOGGING_LOG_LEVEL,
+                event_level=CKAN_SENTRY_GLOBAL_ERROR_LOGGING_LOG_LEVEL
+            )
+        else:
+            logging_integration = LoggingIntegration(level=None, event_level=None)
+
         sentry_sdk.init(
             dsn=CKAN_SENTRY_DSN,
             release="1.3.0",
+            integrations=[logging_integration],
             send_default_pii=True,
         )
         self._configure_logging()
