@@ -44,8 +44,8 @@ To install ckanext-sentry:
 Make sure to configure the following configuration-entries to set up logging with sentry.
 
     # Enable/disable logging to sentry:
-	# (optional, default: False).
-	ckanext.sentry.configure_logging = False
+	# (optional, default: True).
+	ckanext.sentry.enable_logging = False
 
 	# The project-specific DSN-URL-String. See here, how to find it: https://docs.sentry.io/product/sentry-basics/dsn-explainer/#where-to-find-your-dsn
 	# (mandatory, default: "").

@@ -18,8 +18,8 @@ class SentryPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IMiddleware, inherit=True)
 
     def make_middleware(self, app, config):
-        CKAN_SENTRY_CONFIGURE_LOGGING = toolkit.asbool(toolkit.config.get("ckanext.sentry.configure_logging", False))
-        if CKAN_SENTRY_CONFIGURE_LOGGING:
+        CKAN_SENTRY_ENABLE_LOGGING = toolkit.asbool(toolkit.config.get("ckanext.sentry.enable_logging", True))
+        if CKAN_SENTRY_ENABLE_LOGGING:
             return self.make_error_log_middleware(app, config)
         else:
             return app
