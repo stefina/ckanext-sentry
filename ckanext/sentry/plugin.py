@@ -52,7 +52,7 @@ class SentryPlugin(plugins.SingletonPlugin):
             loggers = ["", "ckan", "ckanext", "sentry.errors"]
         for name in loggers:
             logger = logging.getLogger(name)
-            logger.setLevel(CKAN_SENTRY_LOG_LEVEL_NAME)
+            logger.setLevel(CKAN_SENTRY_LOG_LEVEL_INT)
             logger.propagate = CKAN_SENTRY_PROPAGATE
             logger.addHandler(BreadcrumbHandler(level=CKAN_SENTRY_LOG_LEVEL_INT))
             logger.addHandler(EventHandler(level=CKAN_SENTRY_LOG_LEVEL_INT))
