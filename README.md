@@ -59,6 +59,10 @@ Make sure to configure the following configuration-entries to set up logging wit
 	# (optional, default: ["", "ckan", "ckanext", "sentry.errors"]).
 	ckanext.sentry.loggers = ckan ckanext ckanext.dcat ckanext.scheming.plugin
 
+    # Enable propagated logging by setting to `True` or avoid duplicate events from parent loggers:
+	# (optional, default: False).
+	ckanext.sentry.propagate = True
+
 
 ## Developer installation
 
