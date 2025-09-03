@@ -51,17 +51,31 @@ Make sure to configure the following configuration-entries to set up logging wit
 	# (mandatory, default: "").
 	ckanext.sentry.dsn = https://bdda2dd00b2bb8296f4da0767b8a7adc@o198669.ingest.us.sentry.io/4509909612298240
 
+    # Configure loggers, separated with spaces, for sentry.
+    # (optional, default: "" ckan ckanext sentry.errors).
+	ckanext.sentry.loggers = ckan ckanext
+    
+    # Control whether a logger passes its log records up the hierarchy. Setting it to `False` gives you a fine-grained logging control. Setting this to `True` can create duplicates:
+	# (optional, default: False).
+	ckanext.sentry.propagate = True
+
     # Configure log_level for sentry:
 	# (optional, default: WARNING).
 	ckanext.sentry.log_level = WARNING
 
-    # Configure loggers, separated with spaces, for sentry. Add `""` to include the root-logger:
-	# (optional, default: "" ckan ckanext sentry.errors).
-	ckanext.sentry.loggers = ckan ckanext ckanext.dcat ckanext.scheming.plugin
+Example configuration for sending all logs to Sentry:
 
-    # Control whether a logger passes its log records up the hierarchy. Setting it to `False` gives you a fine-grained logging control. Setting this to `True` can create duplicates:
-	# (optional, default: False).
-	ckanext.sentry.propagate = True
+    # If you want all log-entries be sent to Sentry and configure all the resulting actions in Sentry itself, it is recommended to configure it like this:
+	ckanext.sentry.loggers = ckan ckanext
+    # Adding `""` will also include the root-logger.
+    ckanext.sentry.loggers = "" ckan ckanext
+
+Example configuration for sending logs to Sentry from specific plugins only for debugging: 
+
+    # If you want to use Sentry to debug specific plugins only, you can specify the plugins like this:
+    ckanext.sentry.loggers = ckanext.dcat ckanext.harvest ckanext.my_custom_harvest_plugin.my_custom_harvester
+    # Also set propagation to `False` to allow fine-grained logging without duplicates from parent-loggers.
+    ckanext.sentry.propagate = False
 
 
 ## Developer installation
