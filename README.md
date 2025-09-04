@@ -2,7 +2,7 @@
 
 # ckanext-sentry
 
-This plugin adds sentry as middleware using sentry_sdk to log directly to Sentry.
+This plugin adds [sentry](http://getsentry.com/) as middleware using [sentry_sdk](https://pypi.org/project/sentry-sdk/) to log directly to Sentry.
 
 ## Requirements
 
@@ -45,7 +45,7 @@ The default configuration will send all logs with the level ERROR to Sentry. All
 
 	# The project-specific DSN-URL-String. See here, how to find it: https://docs.sentry.io/product/sentry-basics/dsn-explainer/#where-to-find-your-dsn
 	# (mandatory, default: "").
-	ckanext.sentry.dsn = https://bdda2dd00b2bb8296f4da0767b8a7adc@o198669.ingest.us.sentry.io/4509909612298240
+	ckanext.sentry.dsn = https://xxxxxx@xxxxxx.ingest.us.sentry.io/12345
 
 You can deactivate the creation of the sentry-middleware using this configuration:
 
@@ -93,6 +93,11 @@ Example configuration for sending logs to Sentry from specific plugins only for 
     ckanext.sentry.propagate = False
     ckanext.sentry.log_level = DEBUG
 
+Example configuration if you have used one of the previous ckanext-sentry-plugins:
+
+	ckanext.sentry.dsn = https://xxxxxx@xxxxxx.ingest.us.sentry.io/12345
+    ckanext.sentry.global_error_logging = True
+    ckanext.sentry.global_error_logging.log_level = INFO
 
 ## Developer installation
 
