@@ -93,6 +93,11 @@ Example configuration for sending logs to Sentry from specific plugins only for 
     ckanext.sentry.propagate = False
     ckanext.sentry.log_level = DEBUG
 
+Example configuration if you have used one of the previous ckanext-sentry-plugins:
+
+	ckanext.sentry.dsn = https://xxxxxx@xxxxxx.ingest.us.sentry.io/12345
+    ckanext.sentry.global_error_logging = True
+    ckanext.sentry.global_error_logging.log_level = INFO
 
 ## Developer installation
 
