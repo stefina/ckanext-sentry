@@ -1,6 +1,6 @@
 import logging
 import sentry_sdk
-from sentry_sdk.integrations.logging import EventHandler, BreadcrumbHandler
+from sentry_sdk.integrations.logging import EventHandler, BreadcrumbHandler, LoggingIntegration
 from sentry_sdk.integrations.wsgi import SentryWsgiMiddleware
 
 import ckan.plugins as plugins
@@ -18,17 +18,28 @@ class SentryPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IMiddleware, inherit=True)
 
     def make_middleware(self, app, config):
-        CKAN_SENTRY_CONFIGURE_LOGGING = toolkit.asbool(toolkit.config.get("ckanext.sentry.configure_logging", False))
-        if CKAN_SENTRY_CONFIGURE_LOGGING:
+        CKAN_SENTRY_ENABLE_LOGGING = toolkit.asbool(toolkit.config.get("ckanext.sentry.enable_logging", True))
+        if CKAN_SENTRY_ENABLE_LOGGING:
             return self.make_error_log_middleware(app, config)
         else:
             return app
 
     def make_error_log_middleware(self, app, config):
         CKAN_SENTRY_DSN = toolkit.config.get("ckanext.sentry.dsn", None)
+        CKAN_SENTRY_GLOBAL_ERROR_LOGGING = toolkit.asbool(toolkit.config.get("ckanext.sentry.global_error_logging", False))
+        CKAN_SENTRY_GLOBAL_ERROR_LOGGING_LOG_LEVEL = self._parse_log_level_int("ckanext.sentry.global_error_logging.log_level")
+        if CKAN_SENTRY_GLOBAL_ERROR_LOGGING:
+            logging_integration = LoggingIntegration(
+                level=CKAN_SENTRY_GLOBAL_ERROR_LOGGING_LOG_LEVEL,
+                event_level=CKAN_SENTRY_GLOBAL_ERROR_LOGGING_LOG_LEVEL
+            )
+        else:
+            logging_integration = LoggingIntegration(level=None, event_level=None)
+
         sentry_sdk.init(
             dsn=CKAN_SENTRY_DSN,
             release="1.3.0",
+            integrations=[logging_integration],
             send_default_pii=True,
         )
         self._configure_logging()
@@ -41,12 +52,27 @@ class SentryPlugin(plugins.SingletonPlugin):
         """
         Configure the Sentry log handler to the specified level
         """
-        CKAN_SENTRY_LOG_LEVEL = toolkit.config.get("ckanext.sentry.log_level", logging.INFO)
-        loggers = ["", "ckan", "ckanext", "sentry.errors"]
+        CKAN_SENTRY_LOG_LEVEL_NAME = self._parse_log_level_name("ckanext.sentry.log_level")
+        CKAN_SENTRY_LOG_LEVEL_INT = self._parse_log_level_int("ckanext.sentry.log_level")
+        CKAN_SENTRY_LOGGERS = toolkit.config.get("ckanext.sentry.loggers", None)
+        CKAN_SENTRY_PROPAGATE = toolkit.asbool(toolkit.config.get("ckanext.sentry.propagate", False))
+
+        if CKAN_SENTRY_LOGGERS:
+            loggers = CKAN_SENTRY_LOGGERS.split()
+        else:
+            loggers = ["", "ckan", "ckanext", "sentry.errors"]
         for name in loggers:
             logger = logging.getLogger(name)
-            logger.setLevel(CKAN_SENTRY_LOG_LEVEL)
-            logger.addHandler(BreadcrumbHandler(level=CKAN_SENTRY_LOG_LEVEL))
-            logger.addHandler(EventHandler(level=logging.ERROR))
+            logger.propagate = CKAN_SENTRY_PROPAGATE
+            logger.addHandler(BreadcrumbHandler(level=CKAN_SENTRY_LOG_LEVEL_INT))
+            logger.addHandler(EventHandler(level=CKAN_SENTRY_LOG_LEVEL_INT))
 
-        log.debug("Setting up Sentry logger with level {0}".format(CKAN_SENTRY_LOG_LEVEL))
+        log.debug("Setting up Sentry logger with level {0}".format(CKAN_SENTRY_LOG_LEVEL_NAME))
+
+    def _parse_log_level_name(self, conf):
+        raw_level = self._parse_log_level_int(conf)
+        name = str(raw_level).strip().upper()
+        return logging.getLevelName(name)
+
+    def _parse_log_level_int(self, conf):
+        return toolkit.config.get(conf, logging.WARNING)

@@ -41,19 +41,57 @@ To install ckanext-sentry:
 
 ## Config settings
 
-Make sure to configure the following configuration-entries to set up logging with sentry.
-
-    # Enable/disable logging to sentry:
-	# (optional, default: False).
-	ckanext.sentry.configure_logging = False
+The default configuration will send all logs with the level ERROR to Sentry. All you have to configure to get started is the Sentry-DSN:
 
 	# The project-specific DSN-URL-String. See here, how to find it: https://docs.sentry.io/product/sentry-basics/dsn-explainer/#where-to-find-your-dsn
 	# (mandatory, default: "").
 	ckanext.sentry.dsn = https://bdda2dd00b2bb8296f4da0767b8a7adc@o198669.ingest.us.sentry.io/4509909612298240
 
+You can deactivate the creation of the sentry-middleware using this configuration:
+
+    # Enable/disable logging to sentry:
+	# (optional, default: True).
+	ckanext.sentry.enable_logging = False
+
+Configure global error logging (useful for error-reporting in sentry):
+    
+    # Configure global error logging to log all messages of a log-level to Sentry.
+    # (optional, default: False).
+    ckanext.sentry.global_error_logging = True
+
+    # Configure the log-level of global error logging to log all messages to Sentry.
+    # (optional, default: ERROR).
+    ckanext.sentry.global_error_logging.log_level = WARNING
+
+Configure loggers for fine-granular logging (useful for more advanced, fine-granular logging and debugging):
+
+    # Configure loggers, separated with spaces, for sentry.
+    # (optional, default: "" ckan ckanext sentry.errors).
+	ckanext.sentry.loggers = ckan ckanext
+    
+    # Control whether a logger passes its log records up the hierarchy. Setting it to `False` gives you a fine-grained logging control. Setting this to `True` can create duplicates:
+	# (optional, default: False).
+	ckanext.sentry.propagate = True
+
     # Configure log_level for sentry:
 	# (optional, default: WARNING).
 	ckanext.sentry.log_level = WARNING
+
+Example configuration for sending all logs to Sentry:
+
+    # If you want all log-entries be sent to Sentry and configure all the resulting actions in Sentry itself, it is recommended to configure it like this:
+	ckanext.sentry.loggers = ckan ckanext
+    # Adding `""` will also include the root-logger.
+    ckanext.sentry.loggers = "" ckan ckanext
+    ckanext.sentry.log_level = WARNING
+
+Example configuration for sending logs to Sentry from specific plugins only for debugging: 
+
+    # If you want to use Sentry to debug specific plugins only, you can specify the plugins like this:
+    ckanext.sentry.loggers = ckanext.dcat ckanext.harvest ckanext.my_custom_harvest_plugin.my_custom_harvester
+    # Also set propagation to `False` to allow fine-grained logging without duplicates from parent-loggers.
+    ckanext.sentry.propagate = False
+    ckanext.sentry.log_level = DEBUG
 
 
 ## Developer installation
